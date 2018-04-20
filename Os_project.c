@@ -113,4 +113,29 @@ void *Elve (void *arg)
 	return arg;
 }
 
+int main ( int ac, char **av ) 
+{
+	elves = 0;
+	reindeer = 0;
+
+	sem_init(&elfTex,0,1);
+	sem_init(&santaSem,0,1);
+	sem_init(&reindeerSem,0,1);
+	sem_init(&mutex,0,1);
+
+	pthread_t *santa_claus = CreateThread(SantaClaus,0);
+
+	pthread_t *reindeers[N_REINDEER];
+
+	for (int r=0; r<N_REINDEER; r++)
+		reindeers[r] = CreateThread(Reindeer,(void *) r+1);
+
+	pthread_t *elves[N_ELVES];
+
+	for (int e=0; e<N_ELVES; e++)
+		elves[e] = CreateThread(Elve,(void *) e+1);
+
+	int ret = pthread_join(*santa_claus,NULL);
+	assert(ret == 0);
+}
 
